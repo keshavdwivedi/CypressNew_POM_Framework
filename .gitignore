@@ -2,6 +2,5 @@ node_modules/
 *.log
 *.txt
 reports/
-package-lock.json
 screenshots/
 videos/
