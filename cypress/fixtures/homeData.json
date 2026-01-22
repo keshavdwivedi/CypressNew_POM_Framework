@@ -1,0 +1,15 @@
+{
+    "expectedLinks":["Home", "Products","Cart","Signup / Login","Test Cases","API Testing","Video Tutorials","Contact us"],
+
+    "homepagelocators":
+    {
+        "signupBtn":"a[href='/login']",
+        "contactusBtn":"a[href='/contact_us']",
+        "homeLogo":"a>img",
+        "homepageLinks":"ul.nav.navbar-nav>li",
+        "subscribeField":"input#susbscribe_email",
+        "subscribe_button":"button#subscribe",
+        "subscribeSuccessMsg":".alert-success",
+        "testcaseBtn":"li>a[href='/test_cases']"
+    }
+}

@@ -1,0 +1,15 @@
+{
+
+    "contactusLocators":{
+        "getinTouchHeading":"div.row > div > div.contact-form>h2",
+        "nameField":"input[data-qa='name']",
+        "emailField":"input[data-qa='email']",
+        "subjectField":"input[data-qa='subject']",
+        "messageField":"[data-qa='message']",
+        "uploadFileBtn":"input[name='upload_file']",
+        "submitBtn":"input[data-qa='submit-button']",
+        "succeessMsg":"div.status.alert.alert-success"
+    },
+    "filepath":"cypress/fixtures/doc.txt"
+
+}

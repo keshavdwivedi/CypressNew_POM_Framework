@@ -1,30 +1,41 @@
 {
-  "name": "lumastore",
+  "name": "cypress_pom",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "delete-reportFolder": "rm -rf cypress/reports/",
-    "delete-screenshots":"rm -rf cypress/screenshots/",
-    "delete-videos":"rm -rf cypress/videos/",
-    "clean":"npm run delete-reportFolder && npm run delete-screenshots && npm run delete-videos",
+    "delete-screenshots": "rm -rf cypress/screenshots/",
+    "delete-videos": "rm -rf cypress/videos/",
+    "clean": "npm run delete-reportFolder && npm run delete-screenshots && npm run delete-videos",
     "test": "npx cypress run --e2e --browser chrome ",
+    "chrome:test": "cypress run --browser chrome --headed",
     "cy:open": "npx cypress open",
     "cy:run": "npx cypress run",
     "chrometest": "npx cypress run --headed --spec=cypress/e2e/**/*.spec.cy.ts --browser chrome",
     "tagtesting": "npx cypress run -e TAGS='@E2ENaveenAutomationLabs' --e2e --browser chrome  --headed"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keshavdwivedi/CypressPageObjectModel.git"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-
-"dependencies": {
-  "typescript": "^5.9.3"
-},
-
-"devDependencies": {
- "cypress": "^15.5.0",
- "cypress-mochawesome-reporter": "^4.0.2"
-}
-
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/keshavdwivedi/CypressPageObjectModel/issues"
+  },
+  "homepage": "https://github.com/keshavdwivedi/CypressPageObjectModel#readme",
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "cypress": "^15.9.0",
+    "cypress-mochawesome-reporter": "^4.0.2",
+    "mochawesome": "^7.1.4",
+    "mochawesome-merge": "^5.1.0",
+    "mochawesome-report-generator": "^6.3.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "unique-names-generator": "^4.7.1"
+  }
 }

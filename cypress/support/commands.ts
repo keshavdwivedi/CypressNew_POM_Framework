@@ -1,4 +1,7 @@
 /// <reference types="cypress" />
+
+import { verify } from "node:crypto";
+
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -24,47 +27,88 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
 
-declare namespace Cypress {
-    interface Chainable<Subject = any> {
-        verifyTitle(title:string): Chainable<any>;
-        verifyUrl(title:string): Chainable<any>;
-        verifyLogin(email:string,password:string): Chainable<any>;
+
+// Cypress.Commands.add('checkTitle',(pagetitle)=>{
+//    cy.title().then((actualTitle)=>{
+//      expect(actualTitle).to.contain(pagetitle)
+//       console.log("The title "+pagetitle+" has been verified");
+//    })
+// })
+
+
+// Cypress.Commands.add('checkUrl',(pageurl)=>{
+//    cy.url().then((actualUrl)=>{
+//      expect(actualUrl).to.contain(pageurl)
+//       console.log("The url "+pageurl+" has been verified");
+//    })
+// })
+
+
+
+
+declare global{
+namespace Cypress {
+    interface Chainable<Subject=any> {
+        checkTitle(title:string): Chainable<any>;
+        checkUrl(url:string): Chainable<any>;
+      
+        openUrl(path:string):Chainable<any>;
+        getElement(selector:string): Cypress.Chainable<JQuery<HTMLElement>>;
+        waitforElement(selector: string,time:number):Chainable<any>
+        smartClick(target: string | JQuery<HTMLElement>): Chainable<JQuery<HTMLElement>>;
+        getElementText(selector:string):Cypress.Chainable<string>;
+
+        clickByLocator(locator: string): Chainable<JQuery<HTMLElement>>;
+        clickElement(el: JQuery<HTMLElement>): Chainable<JQuery<HTMLElement>>;
+        
+
+        //verifyLogin(email:string,password:string): Chainable<any>;
     }
   }
+}
 
-  Cypress.Commands.add('verifyLogin',(emailVal:string,passwordVal:string)=>{
-     cy.reload();
-     cy.get('div.panel.wrapper > div > ul > li.authorization-link > a').as('loginlink').should('exist').then(()=>{
-     cy.get('@loginlink').click();
-     cy.get('#email').should('be.visible').type(emailVal);
-     cy.get('#pass').should('be.visible').type(passwordVal);
-     cy.get('#send2').click();
-    })
-  })
+Cypress.Commands.add('openUrl',(path)=>{
+  return cy.visit(path);
+})
 
-  Cypress.Commands.add('verifyUrl', (urlVal) => { 
-   cy.url().then((pageURL:any)=>{
-     expect(pageURL).to.contain(urlVal);
-     cy.log("The Url verified is ",pageURL);
-   })
- })
+Cypress.Commands.add('getElement',(selector)=>{
+  return cy.get(selector);
+})
 
-Cypress.Commands.add('verifyTitle', (titleVal) => { 
-    cy.title().then((pageTitle:any)=>{
-     expect(pageTitle).to.contain(titleVal);
-     cy.log("The page title verified is "+pageTitle);
-     
-    })
- })
+Cypress.Commands.add('waitforElement',(selector,time)=>{
+  return cy.get(selector).should('be.visible',{time})
+})
+
+
+
+
+Cypress.Commands.add('getElementText',(selector)=>{
+ return cy.get(selector).invoke('text')
+})
+
+// 1) Accepts a selector string
+Cypress.Commands.add('clickByLocator', (locator: string) => {
+  return cy.get(locator).click()
+})
+
+// 2) Accepts a JQuery<HTMLElement> (element reference)
+Cypress.Commands.add('clickElement', (el: JQuery<HTMLElement>) => {
+  // wrap the element so Cypress manages retries/waits
+  return cy.wrap(el).click()
+})
+
+// 4) Flexible: accepts string selector OR JQuery element
+Cypress.Commands.add('smartClick', (target: string | JQuery<HTMLElement>) => {
+  if (typeof target === 'string') {
+    return cy.get(target).click()
+  }
+  return cy.wrap(target).click()
+})
+
+
+
+
+//export{}
+
+

@@ -1,0 +1,17 @@
+{
+    "homePage":{
+        "pageURL":"https://automationexercise.com/",
+        "pageTitle":"Automation Exercise"
+    },
+
+    "contactusPage":{
+        "pageURL":"https://automationexercise.com/contact_us",
+        "pageTitle":"Automation Exercise - Contact Us"
+    },
+
+    "testcasesPage":{
+        "pageURL":"https://automationexercise.com/test_cases",
+        "pageTitle":"Automation Practice Website for UI Testing - Test Cases"
+    }
+    
+}

@@ -1,0 +1,7 @@
+{
+
+    "testcasePage_heading":".title.text-center",
+    "firstTestcase_heading":":nth-child(2) > .panel > .panel-heading > .panel-title > a > u",
+    "lastTestcase_heading":":nth-child(27) > .panel > .panel-heading > .panel-title > a > u"
+
+}
