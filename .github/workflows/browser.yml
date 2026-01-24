@@ -1,3 +1,4 @@
+name: browser-tests-e2e
 on:
   push:
     branches:
