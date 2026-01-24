@@ -1,0 +1,66 @@
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Optional browser to run tests on (overrides matrix). e.g. firefox'
+        required: false
+        default: ''
+
+jobs:
+  cypress:
+    name: Cypress tests (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+    env:
+      # If the workflow_dispatch input "browser" is provided (non-empty) it will override the matrix value.
+      BROWSER: ${{ github.event.inputs.browser != '' && github.event.inputs.browser || matrix.browser }}
+      CI: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # adjust if you need a different Node version
+          cache: 'npm'
+
+      - name: Cache Cypress binary
+        # Caching cypress cache can speed up CI. Key uses OS and Cypress version if available.
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Cypress
+          key: cypress-cache-${{ runner.OS }}-v1
+          restore-keys: |
+            cypress-cache-${{ runner.OS }}-v1
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Clean artifacts (npm script)
+        run: npm run clean
+
+      - name: Run Cypress tests (headless) on ${{ env.BROWSER }}
+        # Use the resolved BROWSER env var. Running headless in CI.
+        run: npx cypress run --browser "$BROWSER" --headless
+        # If you prefer to use your package.json script for chrome specifically, you could instead:
+        # run: npm run test
+        # but the above is generic and uses the BROWSER selection.
+
+      - name: Upload Cypress report artifact (if exists)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-reports-${{ env.BROWSER }}-${{ github.run_id }}
+          path: cypress/reports
+          retention-days: 7
