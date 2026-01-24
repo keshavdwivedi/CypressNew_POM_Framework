@@ -64,4 +64,4 @@ jobs:
         with:
           name: cypress-reports-${{ env.BROWSER }}-${{ github.run_id }}
           path: cypress/reports
-          retention-days: 7
+          retention-days: 2
