@@ -1,4 +1,4 @@
-name: Browser-End-to-end tests
+name: End-to-end tests
 on: push
 jobs:
   cypress-run:
@@ -11,4 +11,10 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
-            browser: firefox
+          command: npm run cy:run
+
+      - name: Cypress Test report
+        uses: actions/upload-artifact@v3   
+        with:
+          name: Mochawesome HTML Report
+          path: cypress/reports/mochareports
