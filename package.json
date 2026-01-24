@@ -6,7 +6,6 @@
   "scripts": {
      "clean": "rimraf cypress/reports cypress/screenshots cypress/videos",
      "cy:open": "cypress open",
-
      "cy:run": "cypress run",
      "cy:run:headed": "cypress run --headed",
      "cy:run:chrome": "cypress run --browser chrome",
@@ -18,6 +17,10 @@
       "test:spec": "npm run clean && cypress run --spec cypress/e2e/**/*.cy.spec.ts",  
       "test:chrome":"npm run clean && npm run cy:run:chrome",
       "report:run": "npm run clean && cypress run --reporter cypress-mochawesome-reporter --reporter-options reportDir=cypress/reports/mochareports,charts=true,overwrite=true,html=true,json=true",
+
+      "contactus:run":"npm run clean && npx cypress run --spec cypress/e2e/tests/Testcase2.cy.spec.ts",
+      "subscribe:run":"npm run clean && npx cypress run --spec cypress/e2e/tests/Testcase3.cy.spec.ts",
+
 
       "tagtesting": "npx cypress run -e TAGS=\"@E2ENaveenAutomationLabs\" --e2e --browser chrome  --headed"
        

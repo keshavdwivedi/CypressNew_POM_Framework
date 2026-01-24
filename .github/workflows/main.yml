@@ -18,3 +18,4 @@ jobs:
         with:
           name: Mochawesome HTML Report
           path: cypress/reports/mochareports
+          retention-days: 7
