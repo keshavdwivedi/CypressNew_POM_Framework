@@ -1,10 +1,20 @@
+# Combined CI workflow that runs two Cypress jobs in parallel and then
+# downloads their per-job artifacts, combines them into a single zip,
+# and uploads the combined artifact.
+#
+# Note:
+# - Each parallel job uploads its artifacts (reports/screenshots/videos) using actions/upload-artifact.
+# - The final job (combine-artifacts) depends on both jobs, downloads all artifacts from the run,
+#   zips them into a single file, and uploads that combined artifact.
+#
+# Trigger: push (you can add pull_request, workflow_dispatch, etc. as needed)
 on: push
 
 name: Browser-End-to-end tests-Parallel
 
 jobs:
   Contactus-flow-run:
-    name: Contactus flow
+    name: Contactus flow (Chrome)
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -14,6 +24,7 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           command: npm run contactus:run
+          browser: chrome
 
       - name: Upload Cypress artifacts (Contactus)
         if: always()
@@ -25,7 +36,7 @@ jobs:
           retention-days: 2
 
   Subscribe-flow-run:
-    name: Subscribe flow
+    name: Subscribe flow (Firefox)
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -35,6 +46,7 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           command: npm run subscribe:run
+          browser: firefox
 
       - name: Upload Cypress artifacts (Subscribe)
         if: always()
@@ -43,4 +55,58 @@ jobs:
           name: subscribe-artifacts-${{ github.run_id }}
           path: |
             cypress/reports
+          retention-days: 2
+
+  combine-artifacts:
+    name: Combine artifacts into single zip
+    runs-on: ubuntu-latest
+    needs:
+      - Contactus-flow-run
+      - Subscribe-flow-run
+    # run this job even if previous jobs failed so we can collect artifacts uploaded with if: always()
+    if: always()
+    steps:
+      - name: Checkout (needed if you want repository files included)
+        uses: actions/checkout@v3
+
+      - name: Download all job artifacts from this workflow run
+        # downloads every artifact uploaded in this workflow run into ./downloaded_artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded_artifacts
+
+      - name: List downloaded artifact folders
+        run: |
+          echo "Contents of downloaded_artifacts:"
+          ls -la downloaded_artifacts || true
+          echo "Tree:"
+          find downloaded_artifacts -maxdepth 3 -type f -print || true
+
+      - name: Create combined zip of all artifacts
+        run: |
+          mkdir -p combined_output
+          # Move everything into combined_output to avoid zipping unnecessary workspace files
+          if [ -d downloaded_artifacts ]; then
+            # Preserve folder structure under combined_output
+            mv downloaded_artifacts/* combined_output/ || true
+          fi
+          # Create a timestamped combined zip at repository root
+          ZIP_NAME="combined-artifacts-${{ github.run_id }}.zip"
+          cd combined_output || exit 0
+          # ensure zip exists even if folder empty
+          if [ "$(ls -A . 2>/dev/null)" ]; then
+            zip -r "../${ZIP_NAME}" .
+          else
+            # Create an empty zip if no artifacts were downloaded
+            zip -r "../${ZIP_NAME}" . || true
+          fi
+          cd ..
+          ls -la "${ZIP_NAME}" || true
+
+      - name: Upload combined artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-artifacts-${{ github.run_id }}
+          path: combined-artifacts-${{ github.run_id }}.zip
           retention-days: 2
